@@ -289,11 +289,15 @@ The project follows a **Test-Driven Development (TDD)** approach.
 
 ### 2. Version Control (Git)
 
-- **Mandatory Author**: All commits MUST explicitly specify the user as the author to maintain consistency with the project owner's identity.
-- **Commit Configuration**:
-  ```bash
-  git commit --author="Rafael Medina <rafael.medina.ayuso@gmail.com>" -m "<type>(<scope>): <description>"
-  ```
+- **Mandatory Author**: All commits MUST explicitly specify the user as the author: `Rafael Medina <rafael.medina.ayuso@gmail.com>`.
+- **Commit Standard**: Use **Conventional Commits** specification (`<type>(<scope>): <description>`).
+- **Style Authority**: All commit messages MUST strictly follow the rules defined in `GEMINI.md`.
+  - **Language**: Exclusive use of Spanish.
+  - **Punctuation**: Zero tolerance for em dashes (—) or en dashes (–). Use semicolons or periods instead.
+  - **Tone**: Technical, dry, and professional (minimalist "élite" style).
+  - **Voice**: Active and imperative voice.
+- **Commit Skill**: Use the `git-commit` skill to analyze diffs and ensure semantic accuracy.
+
 - **Staging**: Do not stage or commit changes unless explicitly requested.
 
 ## Commit Guidelines
