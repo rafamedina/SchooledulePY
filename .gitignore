@@ -1,0 +1,87 @@
+# ==================================================================
+# SCHOOLEDULE - GITIGNORE DEFINITION
+# ==================================================================
+# Este archivo define los patrones de exclusión para Git, asegurando
+# que artefactos temporales, secretos y datos locales no se sincronicen.
+
+# 1. Python & Django
+# ------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.installed.cfg
+*.egg
+MANIFEST
+pip-log.txt
+pip-delete-this-directory.txt
+venv/
+ENV/
+
+# 2. Django Specific
+# ------------------------------------------------------------------
+# No ignorar el código fuente, solo los activos generados.
+src/static/
+src/media/
+src/db.sqlite3
+src/db.sqlite3-journal
+
+# 3. Environment & Secrets (CRITICAL)
+# ------------------------------------------------------------------
+# Nunca subir archivos que contengan claves o credenciales reales.
+.env
+.env.local
+.env.*.local
+.venv
+*.env
+!.env.example
+
+# 4. Docker & Infrastructure
+# ------------------------------------------------------------------
+# Los datos de la base de datos persisten localmente y no deben subirse.
+docker/.dockerignore
+.docker-compose.yml.swp
+
+# 5. IDEs & Editors
+# ------------------------------------------------------------------
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.pydevproject
+.settings/
+
+# 6. Testing & Quality
+# ------------------------------------------------------------------
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+.cache/
+nosetests.xml
+coverage.xml
+*.cover
+*.log
+.ruff_cache/
+
+# 7. OS Specific
+# ------------------------------------------------------------------
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 8. Project Specific (Agent/CLI)
+# ------------------------------------------------------------------
+.gemini/
+.agents/
+.gemini_security/
+gha-creds-*.json

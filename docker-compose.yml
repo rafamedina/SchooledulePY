@@ -1,0 +1,107 @@
+# Versión del esquema de Compose compatible con las funcionalidades modernas de red y salud.
+version: "3.14"
+
+services:
+  # Servicio de base de datos relacional PostgreSQL.
+  # Proporciona el motor de persistencia central para el ecosistema Schooledule.
+  db:
+    # Utiliza la imagen ligera de PostgreSQL basada en Alpine Linux para optimizar el almacenamiento.
+    image: postgres:14-alpine
+    # Nombre asignado al contenedor para identificación rápida en el sistema de orquestación.
+    container_name: schooledule-db
+    # Política de reinicio para asegurar la disponibilidad del servicio tras fallos inesperados.
+    restart: unless-stopped
+    # Persistencia de los datos mediante volúmenes para evitar la pérdida de información al borrar el contenedor.
+    # Se añade el mapeo del esquema inicial de la base de datos para su ejecución automática.
+    # El directorio './database/scripts' local se vincula a '/docker-entrypoint-initdb.d/' en el contenedor.
+    # PostgreSQL ejecuta por orden alfabético todos los scripts .sql en esta ruta solo durante la creación inicial del volumen.
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/scripts:/docker-entrypoint-initdb.d:ro
+    # Variables de entorno inyectadas desde el archivo .env o valores por defecto del sistema.
+    # Estas variables definen la identidad del esquema, usuario y contraseña de administración.
+    environment:
+      - POSTGRES_DB=${DB_NAME:-schooledule}
+      - POSTGRES_USER=${DB_USER:-postgres}
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-postgres_password}
+    # Evaluación periódica de la disponibilidad de PostgreSQL mediante la herramienta pg_isready.
+    # El intervalo de 5 segundos permite una detección rápida para servicios dependientes.
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${DB_USER:-postgres} -d ${DB_NAME:-schooledule}",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    # Red de comunicaciones aislada para la infraestructura de persistencia.
+    networks:
+      - backend
+
+  # Servicio de servidor de aplicaciones web basado en Django.
+  # Gestiona la lógica de negocio y la entrega de plantillas HTML.
+  web:
+    # Definición de la construcción de la imagen personalizada del servicio web.
+    # Especifica el contexto raíz y la ruta relativa al archivo Dockerfile dentro de la carpeta docker.
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    # Identificador único del contenedor dentro del entorno de ejecución de Docker.
+    container_name: schooledule-web
+    # Asegura que el servidor de aplicaciones se levante automáticamente ante reinicios del sistema.
+    restart: unless-stopped
+    # Mapeo de volúmenes para desarrollo y gestión de archivos persistentes.
+    # ./src:/app sincroniza el código fuente local con el contenedor para permitir cambios en tiempo real.
+    # static_volume y media_volume gestionan los activos estáticos y subidas de usuarios fuera de la imagen.
+    volumes:
+      - ./src:/app
+      - static_volume:/app/static
+      - media_volume:/app/media
+    # Configuración de la aplicación mediante variables de entorno centralizadas en el archivo .env.
+    # Define modos de depuración, claves de seguridad, hosts permitidos y parámetros de conexión SQL.
+    environment:
+      - DEBUG=${DEBUG:-True}
+      - SECRET_KEY=${SECRET_KEY:-django-insecure-default-key}
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS:-localhost,127.0.0.1,0.0.0.0}
+      - DB_NAME=${DB_NAME:-schooledule}
+      - DB_USER=${DB_USER:-postgres}
+      - DB_PASSWORD=${DB_PASSWORD:-postgres_password}
+      - DB_HOST=db
+      - DB_PORT=5432
+    # Exposición de puertos de red: el puerto 8000 del contenedor se mapea al 8000 de la máquina host.
+    ports:
+      - "8000:8000"
+    # Orquestación de arranque: el servicio web no inicia hasta que el servicio de base de datos sea saludable.
+    # Esto previene errores de conexión en la inicialización de Django.
+    depends_on:
+      db:
+        condition: service_healthy
+    # Conexión a redes duales para aislamiento de tráfico.
+    # frontend gestiona la comunicación externa; backend gestiona la comunicación privada con la base de datos.
+    networks:
+      - frontend
+      - backend
+    # Monitorización de la disponibilidad de la aplicación Django mediante peticiones HTTP.
+    # Verifica que el servidor Gunicorn esté respondiendo en el puerto 8000 tras el arranque inicial.
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+# Definición de volúmenes compartidos y persistentes del proyecto.
+# Estos recursos sobreviven a la eliminación y recreación de los contenedores individuales.
+volumes:
+  postgres_data:
+  static_volume:
+  media_volume:
+
+# Definición de la infraestructura de red virtual del ecosistema.
+# Utiliza el controlador bridge estándar para el aislamiento de servicios locales.
+networks:
+  frontend:
+    driver: bridge
+  backend:
+    driver: bridge
