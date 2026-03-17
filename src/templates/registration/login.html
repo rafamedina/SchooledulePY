@@ -1,0 +1,68 @@
+<!-- Plantilla de inicio de sesión de SchooledulePY -->
+<!-- Utiliza las convenciones de Django para formularios de autenticación -->
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión - SchooledulePY</title>
+    <!-- Estilo minimalista coherente con el resto de la aplicación -->
+    <style>
+        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background-color: #f0f2f5; }
+        .login-card { background: white; padding: 2.5rem; border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 350px; }
+        h1 { font-size: 1.8rem; margin-bottom: 2rem; color: #1a1a1a; text-align: center; }
+        .form-group { margin-bottom: 1.2rem; }
+        label { display: block; margin-bottom: 0.5rem; font-weight: 600; color: #444; }
+        input[type="text"], input[type="password"] { width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
+        button { width: 100%; padding: 0.8rem; background-color: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 1.1rem; font-weight: bold; margin-top: 1rem; }
+        button:hover { background-color: #218838; }
+        .error-msg { color: #dc3545; background-color: #f8d7da; padding: 0.8rem; border-radius: 5px; margin-bottom: 1.5rem; font-size: 0.9rem; border: 1px solid #f5c6cb; }
+    </style>
+</head>
+<body>
+    <div class="login-card">
+        <h1>Acceso</h1>
+
+        <!-- Muestra errores generales de autenticación (ej. credenciales inválidas) -->
+        {% if form.errors %}
+        <div class="error-msg">
+            Nombre de usuario o contraseña incorrectos.
+        </div>
+        {% endif %}
+
+        <form method="post">
+            <!-- Token CSRF obligatorio para proteger el envío del formulario -->
+            {% csrf_token %}
+
+            <!-- Campo para el nombre de usuario (mapeado al USERNAME_FIELD del modelo) -->
+            <div class="form-group">
+                <label for="id_username">Usuario:</label>
+                {{ form.username }}
+            </div>
+
+            <!-- Campo para la contraseña (mapeado a la columna password_hash en PG) -->
+            <div class="form-group">
+                <label for="id_password">Contraseña:</label>
+                {{ form.password }}
+            </div>
+
+            <!-- Botón de envío que inicia la validación contra el motor BCrypt -->
+            <button type="submit">Iniciar Sesión</button>
+        </form>
+    </div>
+
+    <!-- Script opcional para añadir clases de estilo a los inputs generados por Django -->
+    <script>
+        document.querySelectorAll('input').forEach(input => {
+            if (input.type !== 'hidden') {
+                input.style.width = '100%';
+                input.style.padding = '0.75rem';
+                input.style.border = '1px solid #ddd';
+                input.style.borderRadius = '5px';
+                input.style.boxSizing = 'border-box';
+            }
+        });
+    </script>
+</body>
+</html>

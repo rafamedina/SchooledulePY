@@ -1,0 +1,32 @@
+Eres in desarrollador senior de Django, usaras las skill necesarias siempre que se necesiten.
+
+
+La idea base de "Schooledule" es la creación de una plataforma integral diseñada para digitalizar y orquestar toda la gestión académica y administrativa de un centro educativo. Su propósito fundamental es establecer un entorno unificado y seguro que conecte
+ a la dirección, al profesorado y al alumnado, garantizando que la información fluya de manera controlada y estructurada.
+
+El "cerebro" central y la única fuente de la verdad de todo este ecosistema es la base de datos PostgreSQL.
+
+A continuación, se detallan las funcionalidades principales del sistema, entendiendo cómo PostgreSQL organiza la lógica detrás de cada una:
+1. Sistema Inteligente de Acceso y "Multititularidad"
+
+    Identidad Única: El sistema utiliza un modelo de "Persona Unificada" almacenado en PostgreSQL, lo que significa que cada usuario tiene una única identidad digital (un solo correo electrónico y contraseña) independientemente de sus cargos.
+
+    Roles Múltiples Simultáneos: Una misma persona puede ejercer varios perfiles a la vez; por ejemplo, alguien puede ser Administrador en la jefatura de estudios y, al mismo tiempo, impartir clases como Profesor.
+
+    Selección de Contexto: Tras iniciar sesión validando su contraseña, si el usuario posee varios roles, el sistema detiene el flujo y le obliga a seleccionar bajo qué jurisdicción desea operar en esa sesión específica. Esto aísla su contexto, mutando dinámicamente la interfaz y sus privilegios para evitar que acciones de un rol superior interfieran accidentalmente con las de un rol inferior.
+
+2. Perfiles Funcionales y Aislamiento de Datos
+
+El sistema se rige por una directiva estricta de aislamiento de datos que se garantiza algorítmica y matemáticamente desde las tablas de PostgreSQL: "un profesor solo ve a sus alumnos, un alumno solo ve sus notas, y el administrador puede orquestar todo".
+
+    Perfil de Administrador (Dirección / Jefatura): Dispone de un panel de control omnipotente para gestionar la infraestructura del colegio. Sus funciones incluyen insertar nuevos usuarios, realizar matriculaciones masivas, estructurar los cursos académicos, crear aulas y asignar qué carga lectiva corresponde a cada profesor.
+
+    Perfil de Profesor: Accede a un espacio de trabajo estrictamente aislado. El docente interactúa exclusivamente con los datos de las asignaturas que imparte, asegurando que le sea estructuralmente imposible consultar o alterar las calificaciones de alumnos ajenos a su jurisdicción.
+
+    Perfil de Alumno: Funciona como un portal de consulta de su vida académica. La plataforma cruza de forma segura sus datos de matrícula en PostgreSQL para generarle automáticamente un horario semanal personalizado y mostrarle sus boletines de calificaciones.
+
+3. Automatización y Asistencia Inteligente
+
+    Notificaciones Asíncronas: El sistema es capaz de reaccionar a cambios de estado en la base de datos para ejecutar acciones automáticas, como el envío de notificaciones multicanal (correos o mensajes) en el instante en que una asignatura se marca como evaluada y finalizada.
+
+    Análisis y Asistencia a Estudiantes: Se contempla una funcionalidad de asistencia donde los alumnos pueden interactuar con un bot. Este agente consulta los datos estructurados en PostgreSQL para formular respuestas humanizadas sobre la situación académica del estudiante, generar resúmenes algorítmicos de su progreso trimestral o buscar información dentro de la normativa escolar.

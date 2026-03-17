@@ -1,0 +1,67 @@
+<!-- Plantilla para la selección del contexto de trabajo (Rol y Centro) -->
+<!-- Permite que el usuario elija su perfil activo y la sede educativa -->
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Selección de Contexto - SchooledulePY</title>
+    <!-- Estilo minimalista para centrar el formulario de selección -->
+    <style>
+        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background-color: #f4f4f9; }
+        .selection-card { background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 100%; max-width: 400px; }
+        h1 { font-size: 1.5rem; margin-bottom: 1.5rem; color: #333; text-align: center; }
+        .form-group { margin-bottom: 1rem; }
+        label { display: block; margin-bottom: 0.5rem; font-weight: bold; }
+        select { width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px; }
+        button { width: 100%; padding: 0.75rem; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 1rem; margin-top: 1rem; }
+        button:hover { background-color: #0056b3; }
+        .messages { color: #d9534f; list-style: none; padding: 0; margin-bottom: 1rem; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+    <div class="selection-card">
+        <h1>SchooledulePY</h1>
+
+        <!-- Muestra mensajes de error si las validaciones de la vista fallan -->
+        {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+        <form method="post">
+            <!-- Token de seguridad de Django para prevenir ataques CSRF -->
+            {% csrf_token %}
+
+            <!-- Selector de Roles asignados al usuario -->
+            <div class="form-group">
+                <label for="rol_id">Selecciona tu Rol:</label>
+                <select name="rol_id" id="rol_id" required>
+                    <option value="" disabled selected>-- Elige un rol --</option>
+                    {% for rol in user_roles %}
+                    <option value="{{ rol.id }}">{{ rol.nombre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Selector de Centros vinculados al usuario -->
+            <div class="form-group">
+                <label for="centro_id">Selecciona el Centro:</label>
+                <select name="centro_id" id="centro_id" required>
+                    <option value="" disabled selected>-- Elige un centro --</option>
+                    {% for centro in user_centros %}
+                    <option value="{{ centro.id }}">{{ centro.nombre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Botón de envío para confirmar la selección y establecer la sesión -->
+            <button type="submit">Entrar al Sistema</button>
+        </form>
+    </div>
+</body>
+</html>
