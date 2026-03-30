@@ -41,6 +41,7 @@ src/db.sqlite3-journal
 .venv
 *.env
 !.env.example
+src/gunicorn.ctl
 
 # 4. Docker & Infrastructure
 # ------------------------------------------------------------------

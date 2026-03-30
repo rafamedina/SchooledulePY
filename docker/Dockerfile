@@ -74,6 +74,12 @@ COPY --chown=django:django docker/ /app/docker/
 # Esto es vital para que Docker pueda iniciar el proceso de orquestación definido.
 RUN chmod +x /app/docker/entrypoint.sh
 
+# Creación de directorios de salida para archivos estáticos y media.
+# STATIC_ROOT en settings.py se resuelve a /staticfiles (BASE_DIR.parent / "staticfiles").
+# Sin este paso, el usuario 'django' no puede escribir en la raíz del filesystem.
+RUN mkdir -p /staticfiles /app/media \
+    && chown -R django:django /staticfiles /app/media
+
 # Cambio al contexto de ejecución del usuario sin privilegios.
 # A partir de esta línea, los procesos no tienen permisos de administración del sistema.
 USER django
@@ -87,8 +93,8 @@ ENTRYPOINT ["/app/docker/entrypoint.sh"]
 
 # Comando por defecto para iniciar el servidor de aplicaciones WSGI.
 # Se utiliza Gunicorn con 3 procesos trabajadores vinculados a todas las interfaces en el puerto 8000.
-# 'schooledule.wsgi:application' referencia el punto de entrada de la aplicación Django.
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "3", "schooledule.wsgi:application"]
+# 'config.wsgi:application' referencia el punto de entrada de la aplicación Django.
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "3", "config.wsgi:application"]
 
 # Mecanismo de monitorización de salud del contenedor.
 # Realiza una petición local cada 30 segundos para verificar la respuesta del servidor.

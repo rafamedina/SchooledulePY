@@ -1,5 +1,5 @@
-# Versión del esquema de Compose compatible con las funcionalidades modernas de red y salud.
-version: "3.14"
+# Archivo de configuración de Docker Compose para el ecosistema Schooledule.
+# No se especifica 'version' porque está deprecada en Docker Compose v2+.
 
 services:
   # Servicio de base de datos relacional PostgreSQL.
